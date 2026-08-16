@@ -5,6 +5,8 @@ metadata:
   namespace: application
   labels:
     app: demo-nginx
+  annotations:
+    gitops-demo: "changed-by-git-push"
 spec:
   replicas: 3
   selector:
