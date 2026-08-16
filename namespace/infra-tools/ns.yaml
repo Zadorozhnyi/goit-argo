@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: infra-tools
+  labels:
+    purpose: infra-tools
+  annotations:
+    # Argo CD runs in this namespace and Terraform created it. Without these
+    # options a prune would delete the namespace Argo CD itself lives in, which
+    # takes the controller down along with it.
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
