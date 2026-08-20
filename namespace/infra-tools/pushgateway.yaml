@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-pushgateway
+  namespace: infra-tools
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: prometheus-pushgateway
+    targetRevision: 3.8.0
+    helm:
+      valuesObject:
+        service:
+          type: ClusterIP
+          port: 9091
+        # Picked up automatically: the kube-prometheus-stack Application
+        # (namespace/infra-tools/kube-prometheus-stack.yaml) sets
+        # serviceMonitorSelector: {} with SelectorNilUsesHelmValues: false,
+        # so any ServiceMonitor in any namespace is scraped without extra RBAC.
+        serviceMonitor:
+          enabled: true
+          namespace: monitoring
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: monitoring
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - Replace=true
+      - ServerSideApply=true
+    automated:
+      prune: true
+      selfHeal: true

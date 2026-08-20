@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mlflow-tracking
+  namespace: infra-tools
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    chart: mlflow
+    targetRevision: 5.1.17
+    helm:
+      valuesObject:
+        # Backend store and artifact store are deployed as their own
+        # Applications (mlflow-postgres, mlflow-minio) rather than as the
+        # subcharts this chart can bundle, so both are disabled here and
+        # pointed at the external services instead.
+        postgresql:
+          enabled: false
+        externalDatabase:
+          dialectDriver: postgresql
+          host: postgres-postgresql.mlops.svc.cluster.local
+          port: 5432
+          user: mlflow
+          password: mlflowpass
+          database: mlflow
+        minio:
+          enabled: false
+        externalS3:
+          host: minio.mlops.svc.cluster.local
+          port: 9000
+          protocol: http
+          accessKeyID: admin
+          accessKeySecret: mlflowpass
+          bucket: mlflow-artifacts
+          serveArtifacts: true
+        tracking:
+          auth:
+            enabled: false
+          service:
+            type: ClusterIP
+            ports:
+              http: 5000
+          persistence:
+            enabled: false
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: mlops
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - Replace=true
+      - ServerSideApply=true
+    automated:
+      prune: true
+      selfHeal: true
