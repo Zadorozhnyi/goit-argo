@@ -33,7 +33,7 @@ spec:
           enabled: false
         externalDatabase:
           dialectDriver: postgresql
-          host: postgres-postgresql.mlops.svc.cluster.local
+          host: mlflow-postgres-postgresql.mlops.svc.cluster.local
           port: 5432
           user: mlflow
           password: mlflowpass
@@ -41,7 +41,7 @@ spec:
         minio:
           enabled: false
         externalS3:
-          host: minio.mlops.svc.cluster.local
+          host: mlflow-minio.mlops.svc.cluster.local
           port: 9000
           protocol: http
           accessKeyID: admin
