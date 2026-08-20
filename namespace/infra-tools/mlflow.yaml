@@ -13,6 +13,13 @@ spec:
     targetRevision: 5.1.17
     helm:
       valuesObject:
+        # Bitnami emptied the `bitnami/mlflow` tags (Aug 2025 catalog
+        # restructuring); the frozen version lives under bitnamilegacy.
+        global:
+          security:
+            allowInsecureImages: true
+        image:
+          repository: bitnamilegacy/mlflow
         # Backend store and artifact store are deployed as their own
         # Applications (mlflow-postgres, mlflow-minio) rather than as the
         # subcharts this chart can bundle, so both are disabled here and

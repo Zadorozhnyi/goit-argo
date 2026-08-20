@@ -13,6 +13,15 @@ spec:
     targetRevision: 17.0.21
     helm:
       valuesObject:
+        # Bitnami emptied the `bitnami/*` tags for minio images (Aug 2025
+        # catalog restructuring); the frozen versions live under bitnamilegacy.
+        global:
+          security:
+            allowInsecureImages: true
+        image:
+          repository: bitnamilegacy/minio
+        clientImage:
+          repository: bitnamilegacy/minio-client
         auth:
           rootUser: admin
           rootPassword: mlflowpass
@@ -25,6 +34,10 @@ spec:
           type: ClusterIP
           ports:
             api: 9000
+        # Avoids also needing bitnamilegacy/minio-object-browser; the console
+        # isn't required for this assignment (bucket + S3 API only).
+        console:
+          enabled: false
   destination:
     server: "https://kubernetes.default.svc"
     namespace: mlops
