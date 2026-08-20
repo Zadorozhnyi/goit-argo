@@ -20,6 +20,11 @@ spec:
             allowInsecureImages: true
         image:
           repository: bitnamilegacy/mlflow
+        # wait-for-database/wait-for-s3 init containers use this image; the
+        # exact pinned tag was also removed from bitnami/os-shell.
+        waitContainer:
+          image:
+            repository: bitnamilegacy/os-shell
         # Backend store and artifact store are deployed as their own
         # Applications (mlflow-postgres, mlflow-minio) rather than as the
         # subcharts this chart can bundle, so both are disabled here and
